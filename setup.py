@@ -20,8 +20,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description=
-    "A command line tool that provides the functionality to use cloud HSM services as a bitcoin wallet.",
+    description="A command line tool that provides the functionality to use cloud HSM services as a bitcoin wallet.",
     name='altpiggybank',
     version='0.0.1',
     py_modules=['altpiggybank'],
@@ -32,6 +31,7 @@ setup(
     install_requires=requirements,
     license="MIT license",
     long_description=readme,
+    long_description_content_type='text/markdown',
     entry_points='''
         [console_scripts]
         piggy=src.routes:main''',
