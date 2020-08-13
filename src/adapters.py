@@ -17,6 +17,7 @@ def get_tx_inputs(address):
         f"https://sochain.com//api/v2/get_tx_unspent/BTC/{address}", timeout=5)
     assert resp.status_code == 200, f'block explorer return status code {resp.status_code}'
     resp_tx_inputs = resp.json()['data']['txs']
+    assert not not resp_tx_inputs, f"Address: {address} has no unspent transactions"
     tx_inputs = []
     for resp_tx in resp_tx_inputs:
         tx = {}

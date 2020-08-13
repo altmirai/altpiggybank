@@ -149,26 +149,33 @@ def refresh(context, config, **kwargs):
 @click.option('-p', 'partial', is_flag=True, help=help.p)
 @click.option('-a', 'all', is_flag=True, required=True, prompt="Send recipient all the BTC in address",
               cls=NotRequiredIf, not_required_if='partial', help=help.a)
+@pass_config
 @click.pass_context
-def fee(*args, **kwargs):
-    addr_file_name = kwargs['addr_json_file'].name
-    data = read_json_file(addr_file_name)
+def fee(context, config, **kwargs):
+    try:
+        addr_file_name = kwargs['addr_json_file'].name
+        data = read_json_file(addr_file_name)
+        assert data.get(
+            'pem') is not None, 'Incorrect file, please provide a JSON formatted addr file created by piggy addr'
 
-    resp = create_address(
-        pem=data['pem']
-    )['data']
+        resp = create_address(
+            pem=data['pem']
+        )['data']
 
-    fee_data = create_fee(
-        all=kwargs['all'],
-        address=resp['address']
-    )
+        fee_data = create_fee(
+            all=kwargs['all'],
+            address=resp['address']
+        )
 
-    fee_estimate_view(
-        estimates=fee_data['estimates'],
-        n_inputs=fee_data['n_inputs'],
-        n_outputs=fee_data['n_outputs'],
-        address=resp['address']
-    )
+        fee_estimate_view(
+            estimates=fee_data['estimates'],
+            n_inputs=fee_data['n_inputs'],
+            n_outputs=fee_data['n_outputs'],
+            address=resp['address']
+        )
+    except Exception as error:
+        errors.fee(error, context, config, **kwargs)
+
 
 
 @main.command()
@@ -181,52 +188,62 @@ def fee(*args, **kwargs):
               cls=NotRequiredIf, not_required_if='all', help=help.q)
 @click.option('-c', 'change_address', required=True, prompt='Change address',
               cls=NotRequiredIf, not_required_if='all', help=help.c)
+@pass_config
 @click.pass_context
-def tx(*args, **kwargs):
-    addr_file_name = kwargs['addr_json_file'].name
-    data = read_json_file(addr_file_name)
-    resp = create_address(pem=data['pem'])['data']
+def tx(context, config, **kwargs):
+    try:
+        addr_file_name = kwargs['addr_json_file'].name
+        data = read_json_file(addr_file_name)
+        resp = create_address(pem=data['pem'])['data']
 
-    unsigned_txs = create_unsigned_tx(
-        pem=data['pem'],
-        recipient=kwargs['recipient'],
-        fee=kwargs['fee'],
-        value=kwargs['quantity'],
-        change_address=kwargs['change_address']
-    )
+        unsigned_txs = create_unsigned_tx(
+            pem=data['pem'],
+            recipient=kwargs['recipient'],
+            fee=kwargs['fee'],
+            value=kwargs['quantity'],
+            change_address=kwargs['change_address']
+        )
 
-    create_json_file(
-        file_name=f"tx{data['vkhandle']}",
-        all=kwargs['all'],
-        fee=kwargs['fee'],
-        recipient=kwargs['recipient'],
-        partial=kwargs['partial'],
-        vkhandle=data['vkhandle'],
-        skhandle=data['skhandle'],
-        pem=data['pem'],
-        address=resp['address'],
-        confrimed_balance=resp['confirmed_balance'],
-        n_tx_inputs=len(unsigned_txs)
-    )
+        create_json_file(
+            file_name=f"tx{data['vkhandle']}",
+            all=kwargs['all'],
+            fee=kwargs['fee'],
+            recipient=kwargs['recipient'],
+            partial=kwargs['partial'],
+            vkhandle=data['vkhandle'],
+            skhandle=data['skhandle'],
+            pem=data['pem'],
+            address=resp['address'],
+            confrimed_balance=resp['confirmed_balance'],
+            n_tx_inputs=len(unsigned_txs)
+        )
 
-    create_unsigned_tx_files(unsigned_txs, data['vkhandle'])
+        create_unsigned_tx_files(unsigned_txs, data['vkhandle'])
 
-    unsigned_tx_view(unsigned_txs, data['vkhandle'], data['skhandle'])
+        unsigned_tx_view(unsigned_txs, data['vkhandle'], data['skhandle'])
+
+    except Exception as error:
+        errors.tx(error, context, config, **kwargs)
 
 
 @main.command()
 @click.argument('tx_json_file', type=click.File('r'), required=True)
 @click.option('-aws', 'aws', is_flag=True, required=False, default=True)
 @click.option('-sig', 'signature_files', type=click.File('rb'), multiple=True, required=True, cls=VerifySigNumbers)
+@pass_config
 @click.pass_context
-def signed(*args, **kwargs):
-    tx_file_name = kwargs['tx_json_file'].name
-    tx_data = read_json_file(tx_file_name)
-    signatures = read_signature_files(
-        kwargs.get('signature_files'),
-        kwargs.get('aws')
-    )
+def signed(context, config, **kwargs):
+    try:
+        tx_file_name = kwargs['tx_json_file'].name
+        tx_data = read_json_file(tx_file_name)
+        signatures = read_signature_files(
+            kwargs.get('signature_files'),
+            kwargs.get('aws')
+        )
 
-    signed_tx = create_signed_tx(**tx_data, signatures=signatures)
+        signed_tx = create_signed_tx(**tx_data, signatures=signatures)
 
-    signed_tx_view(signed_tx)
+        signed_tx_view(signed_tx)
+
+    except Exception as error:
+        errors.signed(error, context, config, **kwargs)
