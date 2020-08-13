@@ -3,7 +3,7 @@
 
 ***ALTPIGYBANK IS PRE-ALPHA SOFTWARE. USE AT YOUR OWN RISK.***
 
-***READ RISKS AND WARNINGS BELOW FOR USING ALTPIGGYBANK.***
+***READ RISKS AND WARNINGS BELOW BEFORE USING ALTPIGGYBANK.***
 
 ***see www.altmirai.com for more information on cryptoasset custody and for tutorials on how to perform secure cryptoasset safekeeping.***
 
