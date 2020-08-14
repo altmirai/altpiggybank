@@ -71,7 +71,7 @@ class VerifySigNumbers(click.Option):
 
 @click.group()
 def main():
-    ''' AltPiggyBank is an open-sourced command line tool that is designed to be deployed in an AWS EC2 instance and enables cloudHSM to be used for secure Bitcoin safekeeping. See www.altmirai.com for more information.'''
+    ''' AltPiggyBank is command line tool that provides the functionality to use cloud HSM services as a bitcoin wallet. See www.altmirai.com for more information.'''
 
     pass
 
