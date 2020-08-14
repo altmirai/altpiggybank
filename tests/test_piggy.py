@@ -1,18 +1,28 @@
 from hashlib import sha256
 from unittest import mock
+from click.testing import CliRunner
+import datetime
 
 from src.controllers import create_address, create_fee
 from src.models import UnsignedTx, SignedTx
 from src.files import read_signature_files
 from tests.test_data import TestDataOne, MockFeeEstOne
+from src.routes import addr
 
 
 t = TestDataOne()
 fee_estimate = MockFeeEstOne()
 
 
+def excel_date(now):
+    excel_start_date = datetime.datetime(1899, 12, 30)
+    delta = now - excel_start_date
+    return float(delta.days) + (float(delta.seconds) / 86400)
+
+
+
 @mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
-def test_addr(*args):
+def test_create_addr(*args):
 
     file = open(f"{t.path}/{t.pub_key_file_name}", 'rb')
     pem = file.read()
@@ -91,3 +101,19 @@ def test_tx_hex(*args):
     signed_tx = SignedTx(pem, unsigned_tx, signatures)
 
     assert(signed_tx.hex == t.tx_hex)
+
+
+@mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_click_addr(*args):
+    runner = CliRunner()
+    pub_key_file = f'{t.path}/{t.pub_key_file_name}'
+    result = runner.invoke(addr, [f'{pub_key_file}', '-v', f'{t.vkhandle}', '-s', f'{t.skhandle}'])
+    output = [item for item in result.output.split(sep='\n') if item]
+    now = datetime.datetime.now()
+
+    assert result.exit_code == 0
+    assert output[0] == f"File addr{t.vkhandle}.json created"
+    assert output[1] == f"File {t.vkhandle}.csv created"
+    assert output[2] == f"Address: {t.address}"
+    assert output[3] == f"Confirmed Balance(SAT): {t.confirmed_balance} as of {now.strftime('%X')} {now.strftime('%x')}"

@@ -14,27 +14,29 @@ def create_json_file(**data):
             file_data[key] = data[key].decode('utf-8')
         else:
             pass
-    file = open(f'{file_name}.json', 'w')
+    file = open(f"{data['output_path']}/{file_name}.json", 'w')
     file.write(json.dumps(file_data))
     file.close
 
 
-def create_csv_file(**kwargs):
-    vkhandle = kwargs.get('vkhandle')
-    skhandle = kwargs.get('skhandle')
-    address = kwargs.get('address')
-    confirmed_balance = kwargs.get('confirmed_balance')
+def create_csv_file(**data):
+    vkhandle = data.get('vkhandle')
+    skhandle = data.get('skhandle')
+    address = data.get('address')
+    confirmed_balance = data.get('confirmed_balance')
     now = datetime.datetime.now()
-    csv_file = open(f'{vkhandle}.csv', 'wt')
+    csv_file = open(f"{data['output_path']}/{vkhandle}.csv", 'wt')
     csv_file.write(
         f"{vkhandle}, {skhandle}, {address}, {confirmed_balance}, {excel_date(now)}")
     csv_file.close
 
 
-def create_unsigned_tx_files(messages, vkhandle):
+def create_unsigned_tx_files(**data):
+
     n = 1
-    for msg in messages:
-        file = open(f'unsignedTx{vkhandle}_{n}.bin', 'wb')
+    for msg in data['messages']:
+        file = open(
+            f"{data['output_path']}/unsignedTx{data['vkhandle']}_{n}.bin", 'wb')
         file.write(msg)
         file.close
         n += 1
