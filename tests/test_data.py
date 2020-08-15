@@ -128,3 +128,25 @@ class TestDataOne():
     @property
     def aws(self):
         return True
+
+    @property
+    def output_path(self):
+        return 'test_output'
+
+    @property
+    def pem(self):
+        return '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbpzYR5GToC0CXSNlRecu3xAjflSmSoh9\n+Gb41bhqD9VUSa2CHfjiVoEW5Sze46axHXrn1eGSAkTiQmcExfWABQ==\n-----END PUBLIC KEY-----\n'
+
+    @property
+    def addr_json_file(self):
+        return {
+            'file_name': f'addr{self.vkhandle}',
+            'vkhandle': self.vkhandle,
+            'skhandle': self.skhandle,
+            'pem': self.pem,
+            'output_path': self.output_path
+            }
+
+    @property
+    def addr_csv_file(self):
+        return [self.vkhandle, self.skhandle, self.address, str(self.confirmed_balance)]

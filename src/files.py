@@ -81,3 +81,4 @@ def read_json_file(file):
     #     data['address'] = p2pkh.address
     #     data['confirmed_balance'] = p2pkh.confirmed_balance
     return data
+
