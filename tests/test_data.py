@@ -14,7 +14,7 @@ class TestDataOne():
 
     @property
     def pub_key_file_name(self):
-        return 'pubKey7340043.pem'
+        return f"{self.path}/pubKey{self.vkhandle}.pem"
 
     @property
     def vkhandle(self):
@@ -31,10 +31,6 @@ class TestDataOne():
     @property
     def confirmed_balance(self):
         return 5763656
-
-    @property
-    def addr_file_name(self):
-        return "addr7340043.json"
 
     @property
     def all(self):
@@ -150,3 +146,7 @@ class TestDataOne():
     @property
     def addr_csv_file(self):
         return [self.vkhandle, self.skhandle, self.address, str(self.confirmed_balance)]
+
+    @property
+    def addr_json_file_name(self):
+        return f"{self.path}/addr{self.vkhandle}.json"
