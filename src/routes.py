@@ -70,7 +70,7 @@ class VerifySigNumbers(click.Option):
 
 
 @click.group()
-@click.option('-out', 'output_path', required=False)
+@click.option('-out', 'output_path', required=False, help=help.out)
 @pass_config
 def main(config, **kwargs):
     ''' AltPiggyBank is command line tool that provides the functionality to use cloud HSM services as a bitcoin wallet. See www.altmirai.com for more information.'''
