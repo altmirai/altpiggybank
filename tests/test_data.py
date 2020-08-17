@@ -14,7 +14,7 @@ class TestDataOne():
 
     @property
     def pub_key_file_name(self):
-        return 'pubKey7340043.pem'
+        return f"{self.path}/pubKey{self.vkhandle}.pem"
 
     @property
     def vkhandle(self):
@@ -31,10 +31,6 @@ class TestDataOne():
     @property
     def confirmed_balance(self):
         return 5763656
-
-    @property
-    def addr_file_name(self):
-        return "addr7340043.json"
 
     @property
     def all(self):
@@ -95,7 +91,7 @@ class TestDataOne():
         }
 
     @property
-    def tosign_tx(self):
+    def tosign_tx_hex(self):
         return [
             '0100000003593a4e7e762530bccfbcd940c24bc392c6fbe723cf8ef4e8a974f56d1f45279d000000001976a914887047f28478e316732db0bccd086482c8617e4a88acffffffff71672fe586bc7653c7745c440dc41d4738e9ab33a47c4e2e7828a776af8dcf780000000000ffffffff229ad590345c5eac5ec1e6633e936d55fcf8ab17f4475baed913b9c6e7057f5f0000000000ffffffff01b0595600000000001976a91470e825c3aa5396f6cfe794bcc6ad61ab9dfa6a4088ac0000000001000000',
             '0100000003593a4e7e762530bccfbcd940c24bc392c6fbe723cf8ef4e8a974f56d1f45279d0000000000ffffffff71672fe586bc7653c7745c440dc41d4738e9ab33a47c4e2e7828a776af8dcf78000000001976a914887047f28478e316732db0bccd086482c8617e4a88acffffffff229ad590345c5eac5ec1e6633e936d55fcf8ab17f4475baed913b9c6e7057f5f0000000000ffffffff01b0595600000000001976a91470e825c3aa5396f6cfe794bcc6ad61ab9dfa6a4088ac0000000001000000',
@@ -103,12 +99,10 @@ class TestDataOne():
         ]
 
     @property
-    def tosign(self):
+    def tosign_tx_hashed_hex(self):
         return [
-            '2417b4d136ca715066910315a5767e13421cbfa1ff189fb61fd8c3965e4e0509',
-            'adb8eb7980851971b8588aee7d3ad7959c03b0ffbfd0ac2547a21ccb9e2f4faa',
-            '18911c1563755faf6828e38bb5479e52b7eea45affdad2bc0ba444a608209ce5'
-        ]
+            'af69b4567cbcd15f2c719a62311ef8fe47711e21c038dad27f3fc631baf21f3c', '600da7c38b14b9bfc44a6deba21621555b1aadba9066a1e76fe4a7e48082748f', 'f5aa21d884e6e5b4eac08803640b6546145b2f2bf34a04945ea7685615454f27'
+            ]
 
     @property
     def tx_hex(self):
@@ -128,3 +122,68 @@ class TestDataOne():
     @property
     def aws(self):
         return True
+
+    @property
+    def output_path(self):
+        return 'test_output'
+
+    @property
+    def pem(self):
+        return '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbpzYR5GToC0CXSNlRecu3xAjflSmSoh9\n+Gb41bhqD9VUSa2CHfjiVoEW5Sze46axHXrn1eGSAkTiQmcExfWABQ==\n-----END PUBLIC KEY-----\n'
+
+    @property
+    def addr_json_file(self):
+        return {
+            'file_name': f'addr{self.vkhandle}',
+            'vkhandle': self.vkhandle,
+            'skhandle': self.skhandle,
+            'pem': self.pem
+            }
+
+    @property
+    def addr_csv_file(self):
+        return [self.vkhandle, self.skhandle, self.address, str(self.confirmed_balance)]
+
+    @property
+    def addr_json_file_name(self):
+        return f"{self.path}/addr{self.vkhandle}.json"
+
+    @property
+    def bitcoinfees_mock_api(self):
+        n_inputs = len(self.tx_inputs)
+        n_outputs = 1 if self.all else 2
+        bytes = 10 + (n_inputs * 148) + (n_outputs * 34)
+        resp = {"fastestFee": 100, "halfHourFee": 75, "hourFee": 50}
+        estimate = {'Fastest': resp['fastestFee'] * bytes,
+                    'Half hour': resp['halfHourFee'] * bytes,
+                    'One hour': resp['hourFee'] * bytes}
+        return estimate
+
+    @property
+    def signature_file_names(self):
+        i = 0
+        sig_file_names = []
+        while i < len(self.tx_inputs):
+            sig_file_names.append(f'{self.path}/signedTx{self.vkhandle}_{i+1}.der')
+            i += 1   
+        return sig_file_names
+
+    @property
+    def tx_json_file_name(self):
+        return f'{self.path}/tx{self.vkhandle}.json'
+
+    @property
+    def tx_json_file(self):
+        return {
+            'file_name': f'tx{self.vkhandle}',
+            'all': self.all,
+            'fee': self.fee,
+            'recipient': self.recipient,
+            'partial': False if self.all else True,
+            'vkhandle': self.vkhandle,
+            'skhandle': self.skhandle,
+            'pem': self.pem,
+            'address': self.address,
+            'confrimed_balance': self.confirmed_balance,
+            'n_tx_inputs': len(self.tx_inputs)
+        }

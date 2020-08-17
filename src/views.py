@@ -55,11 +55,11 @@ def unsigned_tx_view(messages, vkhandle, skhandle):
         n += 1
     click.secho(f'File tx{vkhandle}.json created', fg='red')
     click.echo('')
-    next_steps(messages, vkhandle, skhandle)
+    aws_cloudHsm_instructions(messages, vkhandle, skhandle)
 
 
-def next_steps(messages, vkhandle, skhandle):
-    click.secho('NEXT STEPS:', bold=True, fg='blue')
+def aws_cloudHsm_instructions(messages, vkhandle, skhandle):
+    click.secho('AWS cloudHsm instructions:', bold=True, fg='blue')
     click.secho('1. Log into your cloudHSM', fg='blue')
     click.secho(
         '2. Run the following to sign your unsigned raw transaction(s):', fg='blue')

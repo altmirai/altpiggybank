@@ -18,7 +18,7 @@ import src.errors as errors
 class Config(object):
 
     def __init__(self):
-        self.path = '.'
+        self.output_path = '.'
         pass
 
 
@@ -70,9 +70,12 @@ class VerifySigNumbers(click.Option):
 
 
 @click.group()
-def main():
+@click.option('-out', 'output_path', required=False)
+@pass_config
+def main(config, **kwargs):
     ''' AltPiggyBank is command line tool that provides the functionality to use cloud HSM services as a bitcoin wallet. See www.altmirai.com for more information.'''
-
+    if kwargs.get('output_path'):
+        config.output_path = kwargs['output_path']
     pass
 
 
@@ -85,7 +88,7 @@ def main():
 def addr(context, config, **kwargs):
     try:
         pem_file_name = kwargs['pem_file'].name
-        file = open(f"{config.path}/{pem_file_name}", 'rb')
+        file = open(f"{pem_file_name}", 'rb')
         pem = file.read()
         file.close()
 
@@ -95,14 +98,16 @@ def addr(context, config, **kwargs):
             file_name=f"addr{kwargs['vkhandle']}",
             vkhandle=kwargs['vkhandle'],
             skhandle=kwargs['skhandle'],
-            pem=pem
+            pem=pem,
+            output_path=config.output_path
         )
 
         create_csv_file(
             vkhandle=kwargs['vkhandle'],
             skhandle=kwargs['skhandle'],
             address=resp['address'],
-            confirmed_balance=resp['confirmed_balance']
+            confirmed_balance=resp['confirmed_balance'],
+            output_path=config.output_path
         )
 
         addr_view(
@@ -131,7 +136,9 @@ def refresh(context, config, **kwargs):
             vkhandle=data['vkhandle'],
             skhandle=data['skhandle'],
             address=resp['address'],
-            confirmed_balance=resp['confirmed_balance']
+            confirmed_balance=resp['confirmed_balance'],
+            output_path=config.output_path
+
         )
 
         show_address_view(
@@ -201,7 +208,9 @@ def tx(context, config, **kwargs):
             recipient=kwargs['recipient'],
             fee=kwargs['fee'],
             value=kwargs['quantity'],
-            change_address=kwargs['change_address']
+            change_address=kwargs['change_address'],
+            output_path=config.output_path
+
         )
 
         create_json_file(
@@ -215,10 +224,16 @@ def tx(context, config, **kwargs):
             pem=data['pem'],
             address=resp['address'],
             confrimed_balance=resp['confirmed_balance'],
-            n_tx_inputs=len(unsigned_txs)
-        )
+            n_tx_inputs=len(unsigned_txs),
+            output_path=config.output_path
 
-        create_unsigned_tx_files(unsigned_txs, data['vkhandle'])
+        )
+        
+        create_unsigned_tx_files(
+            unsigned_txs=unsigned_txs,
+            vkhandle=data['vkhandle'],
+            output_path=config.output_path
+            )
 
         unsigned_tx_view(unsigned_txs, data['vkhandle'], data['skhandle'])
 
