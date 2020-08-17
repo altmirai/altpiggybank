@@ -62,8 +62,8 @@ def test_fee(*args):
 
 # TEST TX STANDARD OUTPUT
 @mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
-@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
 @mock.patch('src.routes.create_json_file', return_value=None, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
 @mock.patch('src.routes.create_unsigned_tx_files', return_value=None, autospec=True)
 def test_tx(*args):
     runner = CliRunner()
@@ -98,3 +98,19 @@ def test_tx(*args):
 
 
 # TEST TX SIGNED STANDARD OUTPUT
+@mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_signed(*args):
+    runner = CliRunner()
+    options = [t.tx_json_file_name]
+    for sig_file_name in t.signature_file_names:
+        options.append('-sig')
+        options.append(sig_file_name)
+
+    result = runner.invoke(signed, options)
+    output = [item for item in result.output.split(sep='\n') if item]
+
+    assert result.exit_code == 0
+    assert output[0] == 'Copy and past the below raw transaction into a third-party broadcast transaction service.'
+    assert output[1] == t.tx_hex
+

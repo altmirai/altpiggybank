@@ -161,3 +161,16 @@ class TestDataOne():
                     'Half hour': resp['halfHourFee'] * bytes,
                     'One hour': resp['hourFee'] * bytes}
         return estimate
+
+    @property
+    def signature_file_names(self):
+        i = 0
+        sig_file_names = []
+        while i < len(self.tx_inputs):
+            sig_file_names.append(f'{self.path}/signedTx{self.vkhandle}_{i+1}.der')
+            i += 1   
+        return sig_file_names
+
+    @property
+    def tx_json_file_name(self):
+        return f'{self.path}/tx{self.vkhandle}.json'
