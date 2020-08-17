@@ -41,7 +41,7 @@ def test_fee(*args):
 # TEST CREATE TOSIGN TXS
 @mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
 @mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
-def test_tosign_tx(*args):
+def test_tosign_tx_unsorted(*args):
     file = open(t.pub_key_file_name, 'rb')
     pem = file.read()
     file.close()
@@ -58,30 +58,92 @@ def test_tosign_tx(*args):
     for msg in unsigned_tx.messages:
         tosign_tx.append(msg['message'].hex())
 
-    # TEST FOR TO_SIGN IF TX_INPUTS ARE SORTED DIFFERENTLY (THERE IS NO "CORRECT" OR CONVENTION FOR SORTING)
-    # tosign_tx_test_data_parts = []
-    # for item in t.tosign_tx:
-    #     tosign_tx_test_data_parts += item[10:].split('ffffffff')
-    # tosign_tx_test_data_parts.sort()
+    assert tosign_tx == t.tosign_tx_hex
 
-    # tosign_tx_parts = []
-    # for item in tosign_tx:
-    #     tosign_tx_parts += item[10:].split('ffffffff')
-    # tosign_tx_parts.sort()
-    # assert(tosign_tx_parts == tosign_tx_test_data_parts)
+
+# TEST CREATE TOSIGN
+@mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_tosign_unsorted(*args):
+    file = open(t.pub_key_file_name, 'rb')
+    pem = file.read()
+    file.close()
+
+    unsigned_tx = UnsignedTx(
+        pem=pem,
+        recipient=t.recipient,
+        fee=t.fee,
+        value=t.value,
+        change_address=t.change_address
+    )
 
     tosigns = unsigned_tx.to_sign
     tosign = []
     for item in tosigns:
-        hashed = sha256(item).digest()
-        tosign.append(hashed.hex())
+        tosign.append(item.hex())
+
+    assert tosign == t.tosign_tx_hashed_hex
+
+
+# TEST CREATE TOSIGN_TX SORTED
+@mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_tosign_tx_sorted(*args):
+    file = open(t.pub_key_file_name, 'rb')
+    pem = file.read()
+    file.close()
+
+    unsigned_tx = UnsignedTx(
+        pem=pem,
+        recipient=t.recipient,
+        fee=t.fee,
+        value=t.value,
+        change_address=t.change_address
+    )
+
+    tosign_tx = []
+    for msg in unsigned_tx.messages:
+        tosign_tx.append(msg['message'].hex())
+
+    tosign_tx_parts = []
+    for item in tosign_tx:
+        tosign_tx_parts += item[10:].split('ffffffff')
+    tosign_tx_parts.sort()
+
+    tosign_tx_test_data_parts = []
+    for item in t.tosign_tx_hex:
+        tosign_tx_test_data_parts += item[10:].split('ffffffff')
+    tosign_tx_test_data_parts.sort()
+
+    assert tosign_tx_parts == tosign_tx_test_data_parts
+
+
+# TEST CREATE TOSIGN SORTED
+@mock.patch('src.bitcoin_addresses.get_confirmed_sat_balance', return_value=t.confirmed_balance, autospec=True)
+@mock.patch('src.models.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_tosign_sorted(*args):
+    file = open(t.pub_key_file_name, 'rb')
+    pem = file.read()
+    file.close()
+
+    unsigned_tx = UnsignedTx(
+        pem=pem,
+        recipient=t.recipient,
+        fee=t.fee,
+        value=t.value,
+        change_address=t.change_address
+    )
+
+    tosigns = unsigned_tx.to_sign
+    tosign = []
+    for item in tosigns:
+        tosign.append(item.hex())
     tosign.sort()
 
-    tosign_test_data = t.tosign
+    tosign_test_data = t.tosign_tx_hashed_hex
     tosign_test_data.sort()
 
-    assert(tosign_tx == t.tosign_tx)
-    assert(tosign == tosign_test_data)
+    assert tosign == tosign_test_data
 
 
 # TEST CREATE SIGNED TRANSACTION HEX

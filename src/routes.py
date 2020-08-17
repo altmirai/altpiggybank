@@ -228,7 +228,7 @@ def tx(context, config, **kwargs):
             output_path=config.output_path
 
         )
-
+        
         create_unsigned_tx_files(
             unsigned_txs=unsigned_txs,
             vkhandle=data['vkhandle'],

@@ -14,6 +14,7 @@ def create_json_file(**data):
             file_data[key] = data[key].decode('utf-8')
         else:
             pass
+    del file_data['output_path']
     file = open(f"{data['output_path']}/{file_name}.json", 'w')
     file.write(json.dumps(file_data))
     file.close
@@ -32,9 +33,8 @@ def create_csv_file(**data):
 
 
 def create_unsigned_tx_files(**data):
-
     n = 1
-    for msg in data['messages']:
+    for msg in data['unsigned_txs']:
         file = open(
             f"{data['output_path']}/unsignedTx{data['vkhandle']}_{n}.bin", 'wb')
         file.write(msg)
