@@ -35,7 +35,7 @@ def get_tx_inputs(address):
 def get_fee_estimate(n_inputs, n_outputs):
     bytes = 10 + (n_inputs * 148) + (n_outputs * 34)
     r = requests.get(
-        'https://bitcoinfees.earn.com/api/v1/fees/recommended', timeout=60)
+        'https://bitcoinfees.earn.com/api/v1/fees/recommended', timeout=5)
     assert r.status_code == 200
     resp = r.json()
     estimate = {'Fastest': resp['fastestFee'] * bytes,

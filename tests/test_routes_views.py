@@ -45,6 +45,19 @@ def test_refresh(*args):
     assert output[2] == f"Confirmed Balance(SAT): {t.confirmed_balance} as of {now.strftime('%X')} {now.strftime('%x')}"
 
 # TEST FEE STANDARD OUTPUT
+@mock.patch('src.controllers.get_fee_estimate', return_value=t.bitcoinfees_mock_api, autospec=True)
+@mock.patch('src.controllers.get_tx_inputs', return_value=t.tx_inputs, autospec=True)
+def test_fee(*args):
+    runner = CliRunner()
+    result = runner.invoke(fee, [t.addr_json_file_name, '-a'])
+    output = [item for item in result.output.split(sep='\n') if item]
+
+    assert result.exit_code == 0
+    assert output[0] == f'The fee estimates for a transaction for 1DSRQWjbNXLN8ZZZ6gqcGx1WNZeKHEJXDv with {len(t.tx_inputs)} inputs and {1 if t.all else 2} outputs are:'
+    i = 0
+    for urgency, est in t.bitcoinfees_mock_api.items():
+        i += 1
+        assert output[i] == f'{urgency}: {est} sat'
 
 
 # TEST TX STANDARD OUTPUT

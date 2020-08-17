@@ -150,3 +150,14 @@ class TestDataOne():
     @property
     def addr_json_file_name(self):
         return f"{self.path}/addr{self.vkhandle}.json"
+
+    @property
+    def bitcoinfees_mock_api(self):
+        n_inputs = len(self.tx_inputs)
+        n_outputs = 1 if self.all else 2
+        bytes = 10 + (n_inputs * 148) + (n_outputs * 34)
+        resp = {"fastestFee": 100, "halfHourFee": 75, "hourFee": 50}
+        estimate = {'Fastest': resp['fastestFee'] * bytes,
+                    'Half hour': resp['halfHourFee'] * bytes,
+                    'One hour': resp['hourFee'] * bytes}
+        return estimate
