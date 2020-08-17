@@ -239,6 +239,22 @@ Altpiggybank does not currently support transaction broadcasting. Several free o
 ___
 ___
 
+# Options
+
+**Output Path**
+
+Starting in version 0.0.2, AltPiggyBank has the option of writting files to a user provided path. To set the output path: 
+**piggy** [**-out** output path] [**command**]
+
+***Example using addr command***
+
+    $ piggy -out ./addresses addr pubKey3670038.pem -v 3670038 -s 36700740
+
+<br/>
+
+___
+___
+
 # Risks
 
 Private keys generated and stored in a cloud HSM services are better protected against theft or loss than with other non-custodial Bitcoin storage. You, however, have an active role in that security.
