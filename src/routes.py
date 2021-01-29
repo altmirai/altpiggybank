@@ -184,7 +184,6 @@ def fee(context, config, **kwargs):
         errors.fee(error, context, config, **kwargs)
 
 
-
 @main.command()
 @click.argument('addr_json_file', type=click.File('r'), required=True)
 @click.option('-a', 'all', is_flag=True, required=True, prompt="Send recipient all the BTC in address", cls=NotRequiredIf, not_required_if='partial', help=help.a)
@@ -222,18 +221,20 @@ def tx(context, config, **kwargs):
             vkhandle=data['vkhandle'],
             skhandle=data['skhandle'],
             pem=data['pem'],
+            value=data['value'],
+            change_address=data['change_address'],
             address=resp['address'],
             confrimed_balance=resp['confirmed_balance'],
             n_tx_inputs=len(unsigned_txs),
             output_path=config.output_path
 
         )
-        
+
         create_unsigned_tx_files(
             unsigned_txs=unsigned_txs,
             vkhandle=data['vkhandle'],
             output_path=config.output_path
-            )
+        )
 
         unsigned_tx_view(unsigned_txs, data['vkhandle'], data['skhandle'])
 
@@ -248,6 +249,7 @@ def tx(context, config, **kwargs):
 @pass_config
 @click.pass_context
 def signed(context, config, **kwargs):
+
     try:
         tx_file_name = kwargs['tx_json_file'].name
         tx_data = read_json_file(tx_file_name)
